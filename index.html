@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Emoji Slot Machine</title>
+    <link href="styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="viewport"></div>
+    <button class="spin-button" onclick="javascript:randomSpin()">Spin</button>
+    <script src="helpers.js"></script>
+    <script src="reel.js"></script>
+    <script>
+      const viewport = document.getElementById("viewport");
+      const reels = [];
+      for (var i = 0; i < REELS; i++) {
+        reels.push(new Reel(viewport));
+      }
+
+      function randomSpin() {
+        const winCombination = [];
+
+        for (var i = 0; i < REELS; i++) {
+          const winSymbol =
+            SYMBOLS[Math.floor(Math.random() * (SYMBOLS.length - 1))];
+          winCombination.push(winSymbol);
+
+          reels[i].spin(winSymbol);
+        }
+
+        console.log("Win combination:", winCombination);
+      }
+    </script>
+  </body>
+</html>
