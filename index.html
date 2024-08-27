@@ -8,7 +8,16 @@
   </head>
   <body>
     <div id="viewport"></div>
-    <button class="spin-button" onclick="javascript:randomSpin()">Spin</button>
+    <div id="controls">
+      <button class="spin-button" onclick="javascript:randomSpin()">
+        Spin
+      </button>
+      <label for="autoplay">
+        <input id="autoplay" type="checkbox" />
+        Autoplay
+      </label>
+    </div>
+    <script src="const.js"></script>
     <script src="helpers.js"></script>
     <script src="reel.js"></script>
     <script>
@@ -16,6 +25,22 @@
       const reels = [];
       for (var i = 0; i < REELS; i++) {
         reels.push(new Reel(viewport));
+      }
+
+      let done = 0;
+
+      function onComplete() {
+        done++;
+
+        if (done === REELS) {
+          done = 0;
+
+          if (document.getElementById("autoplay").checked) {
+            setTimeout(() => {
+              randomSpin();
+            }, AUTOPLAY_DELAY);
+          }
+        }
       }
 
       function randomSpin() {
@@ -26,7 +51,10 @@
             SYMBOLS[Math.floor(Math.random() * (SYMBOLS.length - 1))];
           winCombination.push(winSymbol);
 
-          reels[i].spin(winSymbol);
+          const j = i;
+          setTimeout(() => {
+            reels[j].spin(winSymbol, onComplete);
+          }, j * SPIN_DELAY);
         }
 
         console.log("Win combination:", winCombination);

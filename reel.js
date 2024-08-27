@@ -1,15 +1,3 @@
-const REELS = 3;
-const REEL_HEIGHT = 200;
-const SYMBOLS = ["7️⃣", "🍒", "🍑", "🍓", "🍇", "❤️", "🍋", "💎"];
-const SYMBOL_HEIGHT = 100;
-const SPIN_STEP = 30;
-const PAGE = SYMBOLS.length * SYMBOL_HEIGHT;
-const PAGE_OFFSET = PAGE - SYMBOL_HEIGHT;
-const DRAG_FORCE = 0.005;
-const FRICTION_FREE_ITERATIONS = 10;
-const CENTER = REEL_HEIGHT / 2 - SYMBOL_HEIGHT / 2;
-const DRAG_THRESHOLD = 20;
-
 class Reel {
   constructor(parent) {
     const reel = document.createElement("div");
@@ -21,13 +9,13 @@ class Reel {
       const div = document.createElement("div");
       div.className = "symbol";
       div.style.height = `${SYMBOL_HEIGHT}px`;
-      div.style.bottom = `${SYMBOL_HEIGHT * index}px`;
+      div.style.bottom = `${SYMBOL_HEIGHT * index - SYMBOL_HEIGHT / 2}px`;
       div.textContent = symbol;
       div.symbol = symbol;
       return div;
     });
 
-    const symbolsToRender = Math.ceil(reel.clientHeight / SYMBOL_HEIGHT);
+    const symbolsToRender = Math.ceil(reel.clientHeight / SYMBOL_HEIGHT) + 1;
 
     for (
       let index = 0;
@@ -40,7 +28,7 @@ class Reel {
 
     let interval = null;
 
-    function spin(winSymbol) {
+    function spin(winSymbol, onComplete) {
       let step = SPIN_STEP;
       let friction = 0;
       let iteration = 0;
@@ -99,8 +87,11 @@ class Reel {
               const easing = decelerationFactor ** 2;
               step -= easing * step;
 
-              if (winSymbolDistance < 0) {
+              if (winSymbolDistance < 0.01) {
+                execFn(onComplete);
                 clearInterval(interval);
+              } else if (step <= 0 && winSymbolDistance > 0) {
+                step = 5;
               }
             }
           }
@@ -109,7 +100,7 @@ class Reel {
         iteration++;
       }
 
-      interval = setInterval(internalSpin, 60);
+      interval = setInterval(internalSpin, FRAME_RATE);
     }
 
     this.spin = spin;

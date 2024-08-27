@@ -8,3 +8,8 @@ function shuffleArray(array) {
 
   return array;
 }
+
+function execFn(fn, args, ctx) {
+  if (typeof fn !== "function") return;
+  fn.apply(ctx, args);
+}
